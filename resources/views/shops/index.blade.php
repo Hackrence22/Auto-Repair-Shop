@@ -52,7 +52,8 @@
                             <div class="card-body pb-2">
                                 <div class="mb-3">
                                     <div class="d-flex align-items-center mb-2">
-                                        <img src="{{ optional($shop->admin)->profile_picture ? asset('uploads/' . $shop->admin->profile_picture) : asset('images/default-profile.png') }}" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
+                                        @php $ownerPic = optional($shop->admin)->profile_picture; @endphp
+                                        <img src="{{ $ownerPic ? Storage::disk('public')->url($ownerPic) : asset('images/default-profile.png') }}" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
                                         <div>
                                             <span class="fw-bold text-muted">Owner:</span> {{ $shop->owner_name }}
                                         </div>

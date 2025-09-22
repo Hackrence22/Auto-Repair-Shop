@@ -422,7 +422,7 @@
                             <div class="col-12 mb-2 text-start d-flex align-items-center" style="gap: 0.75rem;">
                                 @php
                                     $imgSrc = Auth::user()->profile_picture && Storage::disk('public')->exists(Auth::user()->profile_picture)
-                                        ? asset('uploads/' . Auth::user()->profile_picture)
+                                        ? Storage::disk('public')->url(Auth::user()->profile_picture)
                                         : asset('images/default-profile.png');
                                 @endphp
                                 <img src="{{ $imgSrc }}" alt="Avatar" style="width:40px;height:40px;object-fit:cover;border-radius:50%;">
@@ -455,7 +455,7 @@
                             @php
                                 $user = \App\Models\User::where('email', $feedback->email)->first();
                                         $imgSrc = $user && $user->profile_picture && Storage::disk('public')->exists($user->profile_picture)
-                                            ? asset('uploads/' . $user->profile_picture)
+                                            ? Storage::disk('public')->url($user->profile_picture)
                                             : asset('images/default-profile.png');
                             @endphp
                                     <div class="feedback-item">

@@ -21,7 +21,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
                     @php
-                        $profilePic = $admin->profile_picture ? asset('uploads/' . $admin->profile_picture) : asset('images/default-profile.png');
+                        $profilePic = $admin->profile_picture ? Storage::disk('public')->url($admin->profile_picture) : asset('images/default-profile.png');
                     @endphp
                     <img src="{{ $profilePic }}" alt="Profile Picture" class="rounded-circle img-thumbnail"
                          style="width: 150px; height: 150px; object-fit: cover; cursor:pointer;"

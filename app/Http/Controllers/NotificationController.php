@@ -145,7 +145,7 @@ class NotificationController extends Controller
                 $name = $admin->name;
                 $email = $admin->email;
                 if ($admin->profile_picture && \Storage::disk('public')->exists($admin->profile_picture)) {
-                    $avatar = asset('uploads/' . $admin->profile_picture);
+                    $avatar = \Storage::disk('public')->url($admin->profile_picture);
                 }
             }
         } 
@@ -156,7 +156,7 @@ class NotificationController extends Controller
                 $name = $user->name;
                 $email = $user->email;
                 if ($user->profile_picture && \Storage::disk('public')->exists($user->profile_picture)) {
-                    $avatar = asset('uploads/' . $user->profile_picture);
+                    $avatar = \Storage::disk('public')->url($user->profile_picture);
                 }
             }
         }

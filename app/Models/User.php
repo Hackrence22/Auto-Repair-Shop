@@ -58,13 +58,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getProfilePictureUrlAttribute()
     {
         if ($this->profile_picture) {
-            // Check if the image path already includes a directory prefix
-            if (strpos($this->profile_picture, 'profile-pictures/') === 0 || 
-                strpos($this->profile_picture, 'user-profiles/') === 0) {
-                return asset('uploads/' . $this->profile_picture);
-            } else {
-                return asset('uploads/profile-pictures/' . $this->profile_picture);
+            // If already a full URL (e.g., Cloudinary secure URL), return as-is
+            if (str_starts_with($this->profile_picture, 'http://') || str_starts_with($this->profile_picture, 'https://')) {
+                return $this->profile_picture;
             }
+            $path = strpos($this->profile_picture, 'profile-pictures/') === 0 ||
+                    strpos($this->profile_picture, 'user-profiles/') === 0
+                ? $this->profile_picture
+                : ('profile-pictures/' . $this->profile_picture);
+            return Storage::disk('public')->url($path);
         }
         if ($this->avatar) {
             return $this->avatar;

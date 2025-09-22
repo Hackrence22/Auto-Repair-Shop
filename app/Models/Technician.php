@@ -67,12 +67,10 @@ class Technician extends Model
     public function getProfilePictureUrlAttribute()
     {
         if ($this->profile_picture) {
-            // Check if the image path already includes a directory prefix
-            if (strpos($this->profile_picture, 'technicians/') === 0) {
-                return asset('uploads/' . $this->profile_picture);
-            } else {
-                return asset('uploads/technicians/' . $this->profile_picture);
-            }
+            $path = strpos($this->profile_picture, 'technicians/') === 0
+                ? $this->profile_picture
+                : ('technicians/' . $this->profile_picture);
+            return Storage::disk('public')->url($path);
         }
         return asset('images/default-technician.png');
     }

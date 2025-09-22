@@ -20,8 +20,8 @@ class ImageService
             return $path;
         }
 
-        // Use asset() for cPanel compatibility - direct path to public/uploads
-        return asset('uploads/' . $path);
+        // Use configured disk URL to support local or GCS seamlessly
+        return Storage::disk('public')->url($path);
     }
 
     /**
@@ -65,8 +65,8 @@ class ImageService
             return $path;
         }
         
-        // Use uploads directory for payment proofs - consistent with other methods
-        return asset('uploads/' . $path);
+        // Use storage disk URL for payment proofs
+        return Storage::disk('public')->url($path);
     }
 
     /**

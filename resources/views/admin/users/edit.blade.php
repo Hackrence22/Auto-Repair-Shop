@@ -16,7 +16,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
                     @php
-                        $img = ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) ? asset('uploads/' . $user->profile_picture) : asset('images/default-profile.png');
+                        $img = ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) ? Storage::disk('public')->url($user->profile_picture) : asset('images/default-profile.png');
                     @endphp
                     <img src="{{ $img }}" alt="Current" class="rounded-circle img-thumbnail" id="previewImg"
                          style="width:150px;height:150px;object-fit:cover;">

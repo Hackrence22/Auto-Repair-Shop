@@ -81,9 +81,9 @@ class PaymentMethod extends Model
         if ($this->image) {
             // Check if the image path already includes the directory prefix
             if (strpos($this->image, 'payment-methods/') === 0) {
-                return asset('uploads/' . $this->image);
+                return \Storage::disk('public')->url($this->image);
             } else {
-                return asset('uploads/payment-methods/' . $this->image);
+                return \Storage::disk('public')->url('payment-methods/' . $this->image);
             }
         }
         return asset('images/cash.png');

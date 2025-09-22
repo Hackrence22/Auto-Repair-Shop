@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class Admin extends Authenticatable
 {
@@ -43,13 +44,11 @@ class Admin extends Authenticatable
     public function getProfilePictureUrlAttribute()
     {
         if ($this->profile_picture) {
-            // Check if the image path already includes a directory prefix
-            if (strpos($this->profile_picture, 'admin-profiles/') === 0 || 
-                strpos($this->profile_picture, 'profile-pictures/') === 0) {
-                return asset('uploads/' . $this->profile_picture);
-            } else {
-                return asset('uploads/admin-profiles/' . $this->profile_picture);
-            }
+            $path = strpos($this->profile_picture, 'admin-profiles/') === 0 ||
+                    strpos($this->profile_picture, 'profile-pictures/') === 0
+                ? $this->profile_picture
+                : ('admin-profiles/' . $this->profile_picture);
+            return Storage::disk('public')->url($path);
         }
         return asset('images/default-profile.png');
     }

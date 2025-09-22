@@ -65,9 +65,11 @@ class PaymentManagementController extends Controller
         $pdf = PDF::loadView('appointments.receipt_pdf', ['appointment' => $appointment]);
         $pdfPath = 'receipts/receipt_' . $appointment->id . '_' . now()->format('Ymd_His') . '.pdf';
         \Storage::disk('public')->put($pdfPath, $pdf->output());
+        // Generate a public URL for the receipt (works for local or GCS)
+        $receiptUrl = \Storage::disk('public')->url($pdfPath);
         
         // Notify user with receipt link
-        $this->notificationService->sendPaymentConfirmationNotification($appointment, $pdfPath);
+        $this->notificationService->sendPaymentConfirmationNotification($appointment, $receiptUrl);
         // Email: payment approved
         try {
             $emailService = app(EmailService::class);
@@ -197,7 +199,7 @@ class PaymentManagementController extends Controller
                     $p->status,
                     $p->payment_status,
                     $p->reference_number,
-                    $p->payment_proof ? asset('uploads/' . $p->payment_proof) : '-',
+                    $p->payment_proof ? \Storage::disk('public')->url($p->payment_proof) : '-',
                 ]);
             }
             fclose($file);

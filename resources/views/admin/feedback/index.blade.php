@@ -31,7 +31,7 @@
                         <td>
                             @php
                                 $user = \App\Models\User::where('email', $feedback->email)->first();
-                                $imgSrc = $user && $user->profile_picture ? asset('uploads/' . $user->profile_picture) : asset('images/default-avatar.png');
+                                $imgSrc = $user && $user->profile_picture ? Storage::disk('public')->url($user->profile_picture) : asset('images/default-avatar.png');
                             @endphp
                             <img src="{{ $imgSrc }}" alt="Avatar" class="table-thumb" style="border-radius:50%;margin-right:6px;vertical-align:middle;cursor:pointer;" onclick="showImageModal('{{ $imgSrc }}')">
                             {{ $feedback->name }}

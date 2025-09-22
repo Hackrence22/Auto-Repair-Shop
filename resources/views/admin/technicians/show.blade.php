@@ -42,7 +42,7 @@
                 </div>
                 <div class="card-body text-center">
                     @if($technician->profile_picture)
-                        <img src="{{ asset('uploads/' . $technician->profile_picture) }}" alt="Profile Picture" 
+                        <img src="{{ Storage::disk('public')->url($technician->profile_picture) }}" alt="Profile Picture" 
                              class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                     @else
                         <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 

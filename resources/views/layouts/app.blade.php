@@ -102,7 +102,7 @@
                                                             $senderEmail = $sender->email ?? null;
                                                             $avatarPath = $sender->profile_picture ?? null;
                                                             if ($avatarPath) {
-                                                                $senderAvatar = asset('uploads/' . $avatarPath);
+                                                                $senderAvatar = Storage::disk('public')->url($avatarPath);
                                                             }
                                                         }
                                                     } elseif ($notification->user_id) {
@@ -111,9 +111,9 @@
                                                             $senderName = $sender->name ?? ($sender->email ?? 'User');
                                                             $senderEmail = $sender->email ?? null;
                                                             $avatarPath = $sender->profile_picture ?? null;
-                                                            if ($avatarPath) {
-                                                                $senderAvatar = asset('uploads/' . $avatarPath);
-                                                            }
+                                                        if ($avatarPath) {
+                                                            $senderAvatar = Storage::disk('public')->url($avatarPath);
+                                                        }
                                                         }
                                                     }
                                                     $isRead = $notification->is_read;
@@ -245,7 +245,7 @@
                                                         $senderEmail = $sender->email ?? null;
                                                         $avatarPath = $sender->profile_picture ?? null;
                                                         if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                                            $senderAvatar = asset('uploads/' . $avatarPath);
+                                                            $senderAvatar = Storage::disk('public')->url($avatarPath);
                                                         }
                                                     }
                                                 } elseif ($notification->user_id) {
@@ -255,7 +255,7 @@
                                                         $senderEmail = $sender->email ?? null;
                                                         $avatarPath = $sender->profile_picture ?? null;
                                                         if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                                            $senderAvatar = asset('uploads/' . $avatarPath);
+                                                            $senderAvatar = Storage::disk('public')->url($avatarPath);
                                                         }
                                                     }
                                                 }

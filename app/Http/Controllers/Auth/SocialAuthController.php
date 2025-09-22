@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class SocialAuthController extends Controller
 {
@@ -63,13 +65,11 @@ class SocialAuthController extends Controller
                 if (!$user->google_id) {
                     $updateData['google_id'] = $googleUser->getId();
                 }
-                if (!$user->avatar) {
-                    $updateData['avatar'] = $googleUser->getAvatar();
+                // Ensure profile_picture is populated (use Google avatar URL directly; no upload)
+                if (!$user->profile_picture && $googleUser->getAvatar()) {
+                    $updateData['profile_picture'] = $googleUser->getAvatar();
                 }
-                // Sync avatar to profile_picture for display
-                if (!$user->profile_picture) {
-                    $updateData['profile_picture'] = $this->downloadAndStoreAvatar($googleUser->getAvatar(), $user->id);
-                }
+                // Do not persist remote avatar URL; keep using profile_picture
                 if (empty($updateData) === false) {
                     $user->update($updateData);
                 }
@@ -99,7 +99,6 @@ class SocialAuthController extends Controller
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
-                    'avatar' => $googleUser->getAvatar(),
                     'password' => Hash::make(Str::random(24)), // Random password
                     'email_verified_at' => now(), // Google emails are verified
                 ];
@@ -128,10 +127,9 @@ class SocialAuthController extends Controller
                 
                 $user = User::create($userData);
                 
-                // Download and store avatar as profile_picture after user is created
-                $profilePicturePath = $this->downloadAndStoreAvatar($googleUser->getAvatar(), $user->id);
-                if ($profilePicturePath) {
-                    $user->update(['profile_picture' => $profilePicturePath]);
+                // Set profile_picture to Google avatar URL directly; skip upload
+                if ($googleUser->getAvatar()) {
+                    $user->update(['profile_picture' => $googleUser->getAvatar()]);
                 }
                 
                 // Log the user in
@@ -181,34 +179,71 @@ class SocialAuthController extends Controller
                 return null;
             }
             
-            // Download the image with timeout
-            $context = stream_context_create([
-                'http' => [
-                    'timeout' => 10, // 10 second timeout
-                    'user_agent' => 'Mozilla/5.0 (compatible; AutoRepairShop/1.0)',
-                ]
-            ]);
-            
-            $imageData = file_get_contents($avatarUrl, false, $context);
-            
-            if ($imageData === false || empty($imageData)) {
-                \Log::warning('Failed to download avatar: Empty or invalid response', ['url' => $avatarUrl]);
+            // If using Cloudinary, prefer direct URL upload via SDK (no server-side download needed)
+            $publicDisk = config('filesystems.disks.public.driver');
+            if ($publicDisk === 'cloudinary') {
+                try {
+                    $result = Cloudinary::upload($avatarUrl, ['folder' => 'profile-pictures']);
+                    $publicId = $result->getPublicId();
+                    $format = $result->getExtension() ?: 'jpg';
+                    // Ensure we return a path Flysystem can resolve
+                    return $publicId . '.' . $format;
+                } catch (\Throwable $e) {
+                    \Log::warning('Cloudinary URL upload failed, falling back to HTTP download', [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            // Download using Laravel HTTP client (handles SSL and timeouts)
+            $response = Http::timeout(10)->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (compatible; AutoRepairShop/1.0)'
+            ])->get($avatarUrl);
+
+            if (!$response->ok()) {
+                \Log::warning('Failed to download avatar: HTTP error', ['url' => $avatarUrl, 'status' => $response->status()]);
                 return null;
             }
-            
-            // Validate image data (basic check)
-            if (strlen($imageData) < 100) { // Too small to be a real image
-                \Log::warning('Failed to download avatar: Image too small', ['url' => $avatarUrl, 'size' => strlen($imageData)]);
+
+            $imageData = $response->body();
+            if (empty($imageData)) {
+                \Log::warning('Failed to download avatar: Empty body', ['url' => $avatarUrl]);
                 return null;
             }
-            
-            // Generate unique filename
-            $filename = 'profile_' . $userId . '_' . time() . '.jpg';
-            
-            // Store directly to storage
+
+            // Infer extension from content-type
+            $contentType = $response->header('Content-Type');
+            $ext = 'jpg';
+            if (is_string($contentType)) {
+                if (str_contains($contentType, 'png')) { $ext = 'png'; }
+                elseif (str_contains($contentType, 'jpeg') || str_contains($contentType, 'jpg')) { $ext = 'jpg'; }
+                elseif (str_contains($contentType, 'gif')) { $ext = 'gif'; }
+                elseif (str_contains($contentType, 'webp')) { $ext = 'webp'; }
+            }
+
+            // If using Cloudinary, upload via SDK using a temp file to avoid adapter fopen issues
+            if ($publicDisk === 'cloudinary') {
+                $tmp = tempnam(sys_get_temp_dir(), 'avatar_');
+                if ($tmp !== false) {
+                    file_put_contents($tmp, $imageData);
+                    try {
+                        $result = Cloudinary::uploadFile($tmp, ['folder' => 'profile-pictures']);
+                        @unlink($tmp);
+                        $secureUrl = method_exists($result, 'getSecurePath') ? $result->getSecurePath() : ($result->getPath() ?? null);
+                        if ($secureUrl) {
+                            return $secureUrl;
+                        }
+                    } catch (\Throwable $e) {
+                        @unlink($tmp);
+                        \Log::warning('Cloudinary uploadFile failed', ['error' => $e->getMessage()]);
+                    }
+                }
+            }
+
+            // Generate unique filename and store via configured disk (non-Cloudinary path)
+            $filename = 'profile_' . $userId . '_' . time() . '.' . $ext;
             $path = 'profile-pictures/' . $filename;
             Storage::disk('public')->put($path, $imageData);
-            
             \Log::info('Avatar downloaded successfully', ['url' => $avatarUrl, 'path' => $path]);
             return $path;
             

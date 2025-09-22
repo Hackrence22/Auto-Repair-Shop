@@ -41,7 +41,7 @@
                     @foreach($admins as $admin)
                         <tr>
                             <td>
-                                <img src="{{ $admin->profile_picture && Storage::disk('public')->exists($admin->profile_picture) ? asset('uploads/' . $admin->profile_picture) : asset('images/default-profile.png') }}" alt="Profile" class="table-thumb" style="border-radius:50%;cursor:pointer;" onclick="showImageModal('{{ $admin->profile_picture && Storage::disk('public')->exists($admin->profile_picture) ? asset('uploads/' . $admin->profile_picture) : asset('images/default-profile.png') }}')">
+                                <img src="{{ $admin->profile_picture && Storage::disk('public')->exists($admin->profile_picture) ? Storage::disk('public')->url($admin->profile_picture) : asset('images/default-profile.png') }}" alt="Profile" class="table-thumb" style="border-radius:50%;cursor:pointer;" onclick="showImageModal('{{ $admin->profile_picture && Storage::disk('public')->exists($admin->profile_picture) ? Storage::disk('public')->url($admin->profile_picture) : asset('images/default-profile.png') }}')">
                             </td>
                             <td>{{ $admin->name }}</td>
                             <td>{{ $admin->email }}</td>

@@ -15,6 +15,9 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'public'),
 
+    // Optional separate cloud disk name (some code/packages reference this)
+    'cloud' => env('FILESYSTEM_CLOUD', env('PUBLIC_DISK_DRIVER', 'public') === 'cloudinary' ? 'public' : 'public'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -38,10 +41,33 @@ return [
             'report' => false,
         ],
 
-        'public' => [
-            'driver' => 'local',
-            'root' => public_path('uploads'),
-            'url' => env('APP_URL').'/uploads',
+        // The "public" disk is used throughout the app for user-uploaded files
+        // (images, payment proofs, receipts). We allow switching it to Cloudinary
+        // via the PUBLIC_DISK_DRIVER env without touching application code that
+        // calls Storage::disk('public').
+        'public' => env('PUBLIC_DISK_DRIVER', 'local') === 'cloudinary'
+            ? [
+                'driver' => 'cloudinary',
+                'url' => env('CLOUDINARY_URL'),
+                'secure' => env('CLOUDINARY_SECURE', true),
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ]
+            : [
+                'driver' => 'local',
+                'root' => public_path('uploads'),
+                'url' => env('APP_URL').'/uploads',
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ],
+
+        // Optional explicit Cloudinary disk
+        'cloudinary' => [
+            'driver' => 'cloudinary',
+            'url' => env('CLOUDINARY_URL'),
+            'secure' => env('CLOUDINARY_SECURE', true),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

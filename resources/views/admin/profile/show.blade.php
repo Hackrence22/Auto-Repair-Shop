@@ -25,7 +25,7 @@
                         <div class="card-body text-center">
                             <div class="mb-3">
                                 @php
-                                    $profilePic = $admin->profile_picture ? asset('uploads/' . $admin->profile_picture) : asset('images/default-profile.png');
+                                    $profilePic = $admin->profile_picture ? Storage::disk('public')->url($admin->profile_picture) : asset('images/default-profile.png');
                                 @endphp
                                 <img src="{{ $profilePic }}" 
                                      alt="Profile Picture" 

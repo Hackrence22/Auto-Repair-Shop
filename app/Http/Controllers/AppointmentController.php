@@ -541,7 +541,7 @@ class AppointmentController extends Controller
                     $p->status,
                     $p->payment_status,
                     $p->reference_number,
-                    $p->payment_proof ? asset('uploads/' . $p->payment_proof) : '-',
+                    $p->payment_proof ? Storage::disk('public')->url($p->payment_proof) : '-',
                 ]);
             }
             fclose($file);

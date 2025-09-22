@@ -27,7 +27,7 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-body text-center">
                             @php
-                                $profilePic = auth('admin')->user()->profile_picture ? asset('uploads/' . auth('admin')->user()->profile_picture) : asset('images/default-profile.png');
+                                $profilePic = auth('admin')->user()->profile_picture ? Storage::disk('public')->url(auth('admin')->user()->profile_picture) : asset('images/default-profile.png');
                             @endphp
                             <img src="{{ $profilePic }}" 
                                  alt="Profile Picture" 

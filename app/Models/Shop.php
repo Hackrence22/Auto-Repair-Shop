@@ -93,7 +93,7 @@ class Shop extends Model
     // Accessors
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset('uploads/' . $this->image) : asset('images/default-shop.png');
+        return $this->image ? Storage::disk('public')->url($this->image) : asset('images/default-shop.png');
     }
 
     public function getFullAddressAttribute()

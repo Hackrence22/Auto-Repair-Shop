@@ -53,7 +53,7 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     @if($appointment->user && $appointment->user->profile_picture)
-                                        <img src="{{ asset('uploads/' . $appointment->user->profile_picture) }}" alt="Profile" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                                        <img src="{{ Storage::disk('public')->url($appointment->user->profile_picture) }}" alt="Profile" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
                                     @else
                                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
                                             <i class="fas fa-user text-white"></i>

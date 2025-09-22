@@ -133,7 +133,7 @@
                                     <label for="profile_picture" class="form-label fw-bold">Profile Picture</label>
                                     @if($technician->profile_picture)
                                         <div class="mb-2">
-                                            <img src="{{ asset('uploads/' . $technician->profile_picture) }}" alt="Current Profile Picture" 
+                                            <img src="{{ Storage::disk('public')->url($technician->profile_picture) }}" alt="Current Profile Picture" 
                                                  class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
                                             <div class="form-text">Current profile picture</div>
                                         </div>
