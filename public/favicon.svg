@@ -1,0 +1,21 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#1673e7"/>
+  
+  <!-- Car body -->
+  <rect x="6" y="12" width="20" height="8" rx="2" fill="white"/>
+  
+  <!-- Car windows -->
+  <rect x="8" y="14" width="6" height="4" fill="#1673e7"/>
+  <rect x="18" y="14" width="6" height="4" fill="#1673e7"/>
+  
+  <!-- Wheels -->
+  <circle cx="10" cy="22" r="3" fill="white"/>
+  <circle cx="22" cy="22" r="3" fill="white"/>
+  <circle cx="10" cy="22" r="2" fill="#1673e7"/>
+  <circle cx="22" cy="22" r="2" fill="#1673e7"/>
+  
+  <!-- Wrench icon -->
+  <path d="M16 4L18 6L14 10L12 8L16 4Z" fill="white"/>
+  <path d="M20 8L22 10L18 14L16 12L20 8Z" fill="white"/>
+</svg>
