@@ -42,20 +42,15 @@
                             if ($sender) {
                                 $senderName = $sender->name ?? ($sender->email ?? 'Admin');
                                 $senderEmail = $sender->email ?? null;
-                                $avatarPath = $sender->profile_picture ?? null;
-                                if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                    $senderAvatar = asset('uploads/' . $avatarPath);
-                                }
+                                $senderAvatar = $sender->profile_picture_url ?? asset('images/default-profile.png');
                             }
                         } elseif ($notification->user_id) {
                             $sender = \App\Models\User::find($notification->user_id);
                             if ($sender) {
                                 $senderName = $sender->name ?? ($sender->email ?? 'User');
                                 $senderEmail = $sender->email ?? null;
-                                $avatarPath = $sender->profile_picture ?? null;
-                                if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                    $senderAvatar = asset('uploads/' . $avatarPath);
-                                }
+                                // Will return uploads path or remote Google avatar
+                                $senderAvatar = $sender->profile_picture_url ?? asset('images/default-profile.png');
                             }
                         }
                     @endphp

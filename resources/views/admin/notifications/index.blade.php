@@ -115,41 +115,25 @@
                                 if ($userSender) {
                                     $senderName = $userSender->name ?? ($userSender->email ?? 'User');
                                     $senderEmail = $userSender->email ?? null;
-                                    $avatarPath = $userSender->profile_picture ?? null;
-                                    if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                        $senderAvatar = asset('uploads/' . $avatarPath);
-                                    }
+                                    $senderAvatar = $userSender->profile_picture_url ?? asset('images/default-profile.png');
                                 }
                             } elseif ($notification->type === 'feedback' && str_contains($notification->title, 'Feedback Reply')) {
                                 // Outgoing: Admin sent feedback reply to user
                                 $senderName = 'You';
                                 $senderEmail = auth('admin')->user()->email ?? null;
-                                $avatarPath = auth('admin')->user()->profile_picture ?? null;
-                                if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                    $senderAvatar = asset('uploads/' . $avatarPath);
-                                } else {
-                                    $senderAvatar = asset('images/default-profile.png');
-                                }
+                                $senderAvatar = auth('admin')->user()->profile_picture_url ?? asset('images/default-profile.png');
                             } elseif (in_array($notification->type, ['status', 'booking', 'payment'])) {
                                 // Outgoing: Admin sent status update to user
                                 $senderName = 'You';
                                 $senderEmail = auth('admin')->user()->email ?? null;
-                                $avatarPath = auth('admin')->user()->profile_picture ?? null;
-                                if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                    $senderAvatar = asset('uploads/' . $avatarPath);
-                                } else {
-                                    $senderAvatar = asset('images/default-profile.png');
-                                }
+                                $senderAvatar = auth('admin')->user()->profile_picture_url ?? asset('images/default-profile.png');
                             } else {
                                 // Default: User sent something to admin
                             $userSender = \App\Models\User::find($notification->user_id);
                                 if ($userSender) {
                                     $senderName = $userSender->name ?? ($userSender->email ?? 'User');
                                     $senderEmail = $userSender->email ?? null;
-                                    $avatarPath = $userSender->profile_picture ?? null;
-                                    if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-                                        $senderAvatar = asset('uploads/' . $avatarPath);
-                                    }
+                                    $senderAvatar = $userSender->profile_picture_url ?? asset('images/default-profile.png');
                                 }
                             }
                         } else {
