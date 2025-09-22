@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show download receipt button
                         const downloadSection = document.getElementById('downloadReceiptSection');
                         const downloadBtn = document.getElementById('downloadReceiptBtn');
-                        downloadBtn.href = `/storage/${notificationData.data.receipt_pdf}`;
+                        downloadBtn.href = `{{ asset('uploads') }}/${notificationData.data.receipt_pdf}`;
                         downloadSection.style.display = 'block';
                     }
                 })

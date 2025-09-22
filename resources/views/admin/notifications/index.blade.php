@@ -265,6 +265,20 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('toggleReadModalBtn').textContent = currentIsRead ? 'Mark as Unread' : 'Mark as Read';
             var modal = new bootstrap.Modal(document.getElementById('notificationDetailsModal'));
             modal.show();
+            // fetch receipt for admin and set button if present
+            fetch(`/admin/notifications/${currentNotificationId}`)
+                .then(r => r.json())
+                .then(data => {
+                    const section = document.getElementById('downloadReceiptSection');
+                    const btn = document.getElementById('downloadReceiptBtn');
+                    if (data.data && data.data.receipt_pdf) {
+                        btn.href = `{{ asset('uploads') }}/${data.data.receipt_pdf}`;
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                })
+                .catch(()=>{});
         });
     });
     // Toggle read/unread in modal
